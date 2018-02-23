@@ -4,8 +4,7 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 **Scripts**:
 
-*log_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.
-                     A function inside this script uses the GF structure (from Communication Toolbox) to invert binary matrix.
+*log_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
 
 *log_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code.
 
