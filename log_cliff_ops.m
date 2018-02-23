@@ -1,6 +1,10 @@
 %% Code to get logical Clifford operators for any stabilizer code
 % Examples: The [[6,4,2]] CSS code and the [[5,1,3]] perfect code.
 
+% In each cell array produced as output, the first column will contain a 
+% symplectic solution and the corresponding second column will contain a
+% circuit for that solution.
+
 % For details, please see the paper 
 % "Synthesis of Logical Clifford Operators via Symplectic Geometry", 
 % available at https://arxiv.org/abs/
