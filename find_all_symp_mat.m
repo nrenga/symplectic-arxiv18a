@@ -27,7 +27,7 @@ F_all = cell(tot,1);
 F0 = find_symp_mat(U([I, m+J], :), V);
 
 A = mod(U * F0, 2);
-Ainv = gf2dec(inv(gf(A)), 1, 3);  % can replace by any fn. that inverts A
+Ainv = g2matinv(A);  % can replace by any fn. that inverts A
 IbJb = union(Ibar,Jbar);
 Basis = A([IbJb, m+IbJb],:);
 Subspace = mod(de2bi((0:2^(2*length(IbJb))-1)',2*length(IbJb)) * Basis, 2);

@@ -22,7 +22,7 @@ F_all = cell(tot,1);
 F0 = find_symp_mat(U(1:(2*m-k), :), V);
 
 A = mod(U * F0, 2);
-Ainv = gf2dec(inv(gf(A)), 1, 3);
+Ainv = g2matinv(A);
 Basis = A([(m - k + 1):m, (2*m - k + 1):(2*m)],:);
 Subspace = mod(de2bi((0:2^(2*k)-1)',2*k) * Basis, 2);
 StabF0 = A((m - k + 1):m, :);

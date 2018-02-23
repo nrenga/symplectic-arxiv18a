@@ -148,7 +148,7 @@ tot = 2^(k*(k+1)/2);
 F_all = cell(tot,1);
 
 A = mod(U * F0, 2);
-Ainv = gf2dec(inv(gf(A)), 1, 3);
+Ainv = g2matinv(A);
 Basis = A([(m - k + 1):m, (2*m - k + 1):(2*m)],:);  % Basis = [S; Spair]
 Subspace = mod(de2bi((0:2^(2*k)-1)',2*k) * Basis, 2);
 StabF0 = A((m - k + 1):m, :);  % StabF0 = S*F0
