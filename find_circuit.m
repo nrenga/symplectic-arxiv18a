@@ -18,6 +18,7 @@ end
 Decomp = symp_mat_decompose(F);
 circuit = cell(1,2);
 ckt_ind = 1;
+ancilla = m + 1;
 
 for i = 1:length(Decomp)
     if (all(all(Decomp{i} == eye(2*m))))
@@ -51,29 +52,29 @@ for i = 1:length(Decomp)
             end
         end
     elseif (all(B(:) == Z(:)) && all(C(:) == Z(:)))
-        while (any(diag(A) ~= ones(m,1)))
-            j = find(diag(A) == 0);
-            for s = 1:length(j)
-                k = find(A(:,j(s)) + A(j(s),:)' == 2, 1, 'first');
-                if (~isempty(k))
-                    j = j(s);
-                    break;
-                end
-            end
-            Perm = I;
-            Perm([k j],:) = Perm([j k],:);
-            circuit{ckt_ind,1} = 'Swap';
-            circuit{ckt_ind,2} = [j k];
-            ckt_ind = ckt_ind + 1;
-            A = mod(Perm * A, 2);  % Perm^{-1} = Perm
-        end
-        A = mod(A + I, 2);
         for j = 1:m
-            inds = find(A(j,:) == 1);
-            for k = 1:length(inds)
-                circuit{ckt_ind,1} = 'CNOT';
-                circuit{ckt_ind,2} = [j inds(k)];  % CNOT_{j->inds(k)}
-                ckt_ind = ckt_ind + 1;
+            inds = find(A(:,j) == 1);
+            if (A(j,j) == 1)
+                inds(inds == j) = [];
+                for k = 1:length(inds)
+                    circuit{ckt_ind,1} = 'CNOT';
+                    circuit{ckt_ind,2} = [inds(k) j];  % CNOT_{inds(k)->j}
+                    ckt_ind = ckt_ind + 1;
+                end
+            else
+                if (length(inds) == 1)
+                    circuit{ckt_ind,1} = 'Swap';
+                    circuit{ckt_ind,2} = [j inds(1)];
+                    ckt_ind = ckt_ind + 1;
+                else
+                    circuit{ckt_ind,1} = 'Ancilla in |0>';
+                    circuit{ckt_ind,2} = ancilla;
+                    ckt_ind = ckt_ind + 1;
+                    circuit{ckt_ind,1} = 'CNOTs';
+                    circuit{ckt_ind,2} = [inds', ancilla];
+                    ckt_ind = ckt_ind + 1;
+                    ancilla = ancilla + 1;
+                end
             end
         end
     else
