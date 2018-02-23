@@ -22,7 +22,7 @@ end
 [k, m] = size(S);
 m = m/2;
 tot = 2^(k*(k+1)/2);
-F_all = cell(tot,1);
+F_all = cell(tot,2);
 
 G = [Xbar; Snorm; Zbar];
 
@@ -74,10 +74,14 @@ for i = 1:k
     U(2*m-k+i,:) = gflineq(fftshift(U,2),h)';
 end
 
-F_all = qfind_all_symp_mat(U, H);
+F_all(:,1) = qfind_all_symp_mat(U, H);
 
 % Can also use the general algorithm as below, 
 % but need to specify I = 1:m and J = 1:m-k
-% F_all = find_all_symp_mat(U, H, 1:m, 1:m-k);
+% F_all(:,1) = find_all_symp_mat(U, H, 1:m, 1:m-k);
+
+for i = 1:tot
+    F_all{i,2} = find_circuit(F_all{i,1});
+end
 
 end

@@ -46,7 +46,7 @@ F_all_H1 = find_logical_cliff(S, Xbar, Zbar, 'H', 1);
 clc
 clear
 close all
-
+tic;
 m = 5;
 k = 4;
 
@@ -66,3 +66,4 @@ F_all_S = find_logical_cliff(S, Xbar, Zbar, 'S', 1);
 % Hadamard gate on the logical qubit
 F_all_H = find_logical_cliff(S, Xbar, Zbar, 'H', 1);
 
+toc;
