@@ -10,7 +10,7 @@
 clc
 clear
 close all
-
+tic;
 m = 6;
 k = 2;
 
@@ -41,6 +41,7 @@ F_all_CNOT21 = find_logical_cliff(S, Xbar, Zbar, 'CNOT', [2 1]);
 % Targeted Hadamard gate on logical qubit 1
 F_all_H1 = find_logical_cliff(S, Xbar, Zbar, 'H', 1);
 
+toc;
 
 %% Code to get logical Clifford operators for the [[5,1,3]] perfect code
 % clc
