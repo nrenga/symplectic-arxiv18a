@@ -22,7 +22,7 @@ end
 [k, m] = size(S);
 m = m/2;
 tot = 2^(k*(k+1)/2);
-F_all = cell(tot,2);
+F_all = cell(tot,3);
 
 G = [Xbar; Snorm; Zbar];
 
@@ -82,6 +82,7 @@ F_all(:,1) = qfind_all_symp_mat(U, H);
 
 for i = 1:tot
     F_all{i,2} = find_circuit(F_all{i,1});
+    F_all{i,3} = size(F_all{i,2},1);
 end
 
 end

@@ -3,7 +3,7 @@
 % Tolerance was removed because yolo, and because all values
 % should only be 0 or 1.  @benathon
 
-function [Ar, M, N, k] = g2rref(A)
+function [Ar, M, N, rnk] = g2rref(A)
 %G2RREF   Reduced row echelon form in gf(2).
 %   R = RREF(A) produces the reduced row echelon form of A in gf(2).
 %
@@ -21,42 +21,48 @@ function [Ar, M, N, k] = g2rref(A)
 
 % By Narayanan Rengaswamy. Date: Feb. 22, 2018
 
-[m,n] = size(A);
-M = eye(m);
-Ar = [A, M];
-nr = size(Ar, 2);
+[Ar, M] = gf2redref(A);
+[Ardiag, Nt] = gf2redref(Ar');
+N = Nt';
+rnk = sum(diag(Ardiag));
 
-% Loop over the entire matrix.
-i = 1;
-j = 1;
+    function [Arref, Row_ops] = gf2redref(A)
+        [m,n] = size(A);
+        Row_ops = eye(m);
+        Arref = [A, Row_ops];
+        nr = size(Arref, 2);
+        
+        % Loop over the entire matrix.
+        i = 1;
+        j = 1;
+        
+        while (i <= m) && (j <= n)
+            % Find value and index of largest element in the remainder of column j.
+            k = find(Arref(i:m,j),1) + i - 1;
+            
+            % Swap i-th and k-th rows.
+            Arref([i k],j:nr) = Arref([k i],j:nr);
+            
+            % Save the right hand side of the pivot row
+            aijn = Arref(i,j:nr);
+            
+            % Column we're looking at
+            col = Arref(1:m,j);
+            
+            % Never Xor the pivot row against itself
+            col(i) = 0;
+            
+            % This builds an matrix of bits to flip
+            flip = col*aijn;
+            
+            % Xor the right hand side of the pivot row with all the other rows
+            Arref(1:m,j:nr) = xor( Arref(1:m,j:nr), flip );
+            
+            i = i + 1;
+            j = j + 1;
+        end
+        Row_ops = Arref(1:m,(n+1):nr);
+        Arref = Arref(1:m,1:n);
+    end
 
-while (i <= m) && (j <= n)
-   % Find value and index of largest element in the remainder of column j.
-   k = find(Ar(i:m,j),1) + i - 1;
-
-   % Swap i-th and k-th rows.
-   Ar([i k],j:nr) = Ar([k i],j:nr);
-   
-   % Save the right hand side of the pivot row
-   aijn = Ar(i,j:nr);
-   
-   % Column we're looking at
-   col = Ar(1:m,j);
-   
-   % Never Xor the pivot row against itself
-   col(i) = 0;
-   
-   % This builds an matrix of bits to flip
-   flip = col*aijn;
-   
-   % Xor the right hand side of the pivot row with all the other rows
-   Ar(1:m,j:nr) = xor( Ar(1:m,j:nr), flip );
-
-   i = i + 1;
-   j = j + 1;
 end
-M = Ar(1:m,(n+1):nr);
-Ar = Ar(1:m,1:n);
-N = [mod(eye(m,n) + Ar + [diag(diag(Ar)), zeros(m, n-m)], 2);
-                zeros(n-m,m), eye(n-m)];
-k = sum(diag(Ar));
