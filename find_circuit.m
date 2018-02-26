@@ -4,6 +4,10 @@ function circuit = find_circuit(F)
 
 % Author: Narayanan Rengaswamy, Date: Feb. 22, 2018
 
+% CAUTION: In any consecutive sequence of CNOTs produced by this function,
+%          for qubits that act as both control and target, first
+%          implement the CNOTs where they act as control!
+
 m = size(F,1)/2;
 I = eye(m);
 Z = zeros(m);
@@ -18,7 +22,6 @@ end
 Decomp = symp_mat_decompose(F);
 circuit = cell(1,2);
 ckt_ind = 1;
-ancilla = m + 1;
 
 for i = 1:length(Decomp)
     if (all(all(Decomp{i} == eye(2*m))))
@@ -52,31 +55,55 @@ for i = 1:length(Decomp)
             end
         end
     elseif (all(B(:) == Z(:)) && all(C(:) == Z(:)))
-        for j = 1:m
-            inds = find(A(:,j) == 1);
-            if (A(j,j) == 1)
-                inds(inds == j) = [];
-                for k = 1:length(inds)
-                    circuit{ckt_ind,1} = 'CNOT';
-                    circuit{ckt_ind,2} = [inds(k) j];  % CNOT_{inds(k)->j}
-                    ckt_ind = ckt_ind + 1;
-                end
-            else
-                if (length(inds) == 1)
-                    circuit{ckt_ind,1} = 'Swap';
-                    circuit{ckt_ind,2} = [j inds(1)];
-                    ckt_ind = ckt_ind + 1;
-                else
-                    circuit{ckt_ind,1} = 'Ancilla in |0>';
-                    circuit{ckt_ind,2} = ancilla;
-                    ckt_ind = ckt_ind + 1;
-                    circuit{ckt_ind,1} = 'CNOTs';
-                    circuit{ckt_ind,2} = [inds', ancilla];
-                    ckt_ind = ckt_ind + 1;
-                    ancilla = ancilla + 1;
-                end
-            end
+        % CAUTION: For qubits that act as both control and target, first
+        %          implement the CNOTs where they act as control!
+        AP = A;
+        if (~all(diag(A) == 1))
+            valid_perm = find_valid_perm(A);
+            P = I(:,valid_perm);
+            AP = mod(A*P,2);
+            Pinv = g2matinv(P);
         end
+        for j = 1:m
+            inds = setdiff(find(AP(j,:) == 1), j);
+            for k = 1:length(inds)
+                circuit{ckt_ind,1} = 'CNOT';
+                circuit{ckt_ind,2} = [j inds(k)];  % CNOT_{j->inds(k)}
+                ckt_ind = ckt_ind + 1;
+            end
+        end    
+        if (~all(diag(A) == 1))
+            circuit{ckt_ind,1} = 'Permute';
+            circuit{ckt_ind,2} = (1:m)*Pinv;
+            ckt_ind = ckt_ind + 1;
+        end
+        
+        % Another possibility: naively implement the transform given by A
+%         ancilla = m;
+%         for j = 1:m
+%             inds = setdiff(find(A(:,j) == 1), j);
+%             if (A(j,j) == 1)
+%                 for k = 1:length(inds)
+%                     circuit{ckt_ind,1} = 'CNOT';
+%                     circuit{ckt_ind,2} = [inds(k) j];  % CNOT_{inds(k)->j}
+%                     ckt_ind = ckt_ind + 1;
+%                 end
+%             else
+%                 ancilla = ancilla + 1;
+%                 circuit{ckt_ind,1} = 'Ancilla in |0>';
+%                 circuit{ckt_ind,2} = ancilla;
+%                 ckt_ind = ckt_ind + 1;
+%                 circuit{ckt_ind,1} = 'CNOTs';
+%                 circuit{ckt_ind,2} = [inds', ancilla];
+%                 ckt_ind = ckt_ind + 1;
+%             end
+%         end
+%         if (ancilla > m)
+%             diagzs = find(diag(A) == 0);
+%             circuit{ckt_ind,1} = 'Swap with ancilla';
+%             circuit{ckt_ind,2} = strcat(mat2str(diagzs),' = ',mat2str((m+1):ancilla));
+%             ckt_ind = ckt_ind + 1;
+%         end
     else
         k = m - sum(diag(A));
         Uk = blkdiag(eye(k), zeros(m-k));
@@ -94,6 +121,14 @@ for i = 1:length(Decomp)
     end
 end    
             
-        
+    function valid_perm = find_valid_perm(A)
+        Indices = cell(size(A,1),1);
+        for iter = 1:size(A,1)
+            Indices{iter,1} = find(A(iter,:) == 1);
+        end
+        Set = cartprod(Indices{:,1});
+        validP = find(sum(abs(bsxfun(@minus,sort(Set,2),1:size(A,1))), 2) == 0, 1, 'first');
+        valid_perm = Set(validP,:);
+    end
 
 end
