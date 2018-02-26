@@ -4,9 +4,9 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 **Scripts**:
 
-*log_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
+*logical_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
 
-*log_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution.
+*logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution.
 
 
 **Functions**:
@@ -34,6 +34,6 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 **Data**:
 
-*log_ops_642.mat*: File containing all solutions listed in Appendix II of the arXiv paper. Also includes circuits for each solution.
+*logical_ops_642.mat*: File containing all solutions listed in Appendix II of the arXiv paper. Also includes a circuit for each solution.
 
-*log_ops_513.mat*: File containing all solutions for the [[5,1,3]] code. Also includes circuits for each solution.
+*logical_ops_513.mat*: File containing all solutions for the [[5,1,3]] code. Also includes a circuit for each solution.

@@ -4,10 +4,6 @@ function circuit = find_circuit(F)
 
 % Author: Narayanan Rengaswamy, Date: Feb. 22, 2018
 
-% CAUTION: In any consecutive sequence of CNOTs produced by this function,
-%          for qubits that act as both control and target, first
-%          implement the CNOTs where they act as control!
-
 m = size(F,1)/2;
 I = eye(m);
 Z = zeros(m);
@@ -27,6 +23,7 @@ for i = 1:length(Decomp)
     if (all(all(Decomp{i} == eye(2*m))))
         continue;
     elseif (all(all(Decomp{i} == Omega)))
+        % Transversal Hadamard
         circuit{ckt_ind,1} = 'H';
         circuit{ckt_ind,2} = 1:m;
         ckt_ind = ckt_ind + 1;
@@ -38,12 +35,14 @@ for i = 1:length(Decomp)
     D = Decomp{i}(m+(1:m),m+(1:m));
     
     if (all(A(:) == I(:)) && all(C(:) == Z(:)) && all(D(:) == I(:)))
-        S_ind = find(diag(B) == 1);
-        for j = 1:length(S_ind)
+        % CZs and Phase
+        S_ind = find(diag(B) == 1)';
+        if (~isempty(S_ind))
             circuit{ckt_ind,1} = 'S';
-            circuit{ckt_ind,2} = S_ind(j);
+            circuit{ckt_ind,2} = S_ind;
             ckt_ind = ckt_ind + 1;
         end
+        
         % Clear diagonal entries, extract upper triangular part as B = B'
         B = triu(mod(B + diag(diag(B)), 2));
         for j = 1:m
@@ -55,56 +54,36 @@ for i = 1:length(Decomp)
             end
         end
     elseif (all(B(:) == Z(:)) && all(C(:) == Z(:)))
+        % CNOTs and Permutations
         % CAUTION: For qubits that act as both control and target, first
         %          implement the CNOTs where they act as control!
-        AP = A;
-        if (~all(diag(A) == 1))
-            valid_perm = find_valid_perm(A);
-            P = I(:,valid_perm);
-            AP = mod(A*P,2);
-            Pinv = g2matinv(P);
+        %          To ensure this, we use LU decomposition over GF(2).
+        [L, U, P] = lu(A);   % P' * L * U = A
+        L = mod(L,2);
+        U = mod(U,2);
+        if (~all(P(:) == I(:)))
+            circuit{ckt_ind,1} = 'Permute';
+            circuit{ckt_ind,2} = (1:m)*P';
+            ckt_ind = ckt_ind + 1;
         end
         for j = 1:m
-            inds = setdiff(find(AP(j,:) == 1), j);
+            inds = setdiff(find(L(j,:) == 1), j);
             for k = 1:length(inds)
                 circuit{ckt_ind,1} = 'CNOT';
                 circuit{ckt_ind,2} = [j inds(k)];  % CNOT_{j->inds(k)}
                 ckt_ind = ckt_ind + 1;
             end
         end    
-        if (~all(diag(A) == 1))
-            circuit{ckt_ind,1} = 'Permute';
-            circuit{ckt_ind,2} = (1:m)*Pinv;
-            ckt_ind = ckt_ind + 1;
-        end
-        
-        % Another possibility: naively implement the transform given by A
-%         ancilla = m;
-%         for j = 1:m
-%             inds = setdiff(find(A(:,j) == 1), j);
-%             if (A(j,j) == 1)
-%                 for k = 1:length(inds)
-%                     circuit{ckt_ind,1} = 'CNOT';
-%                     circuit{ckt_ind,2} = [inds(k) j];  % CNOT_{inds(k)->j}
-%                     ckt_ind = ckt_ind + 1;
-%                 end
-%             else
-%                 ancilla = ancilla + 1;
-%                 circuit{ckt_ind,1} = 'Ancilla in |0>';
-%                 circuit{ckt_ind,2} = ancilla;
-%                 ckt_ind = ckt_ind + 1;
-%                 circuit{ckt_ind,1} = 'CNOTs';
-%                 circuit{ckt_ind,2} = [inds', ancilla];
-%                 ckt_ind = ckt_ind + 1;
-%             end
-%         end
-%         if (ancilla > m)
-%             diagzs = find(diag(A) == 0);
-%             circuit{ckt_ind,1} = 'Swap with ancilla';
-%             circuit{ckt_ind,2} = strcat(mat2str(diagzs),' = ',mat2str((m+1):ancilla));
-%             ckt_ind = ckt_ind + 1;
-%         end
+        for j = m:-1:1
+            inds = setdiff(find(U(j,:) == 1), j);
+            for k = 1:length(inds)
+                circuit{ckt_ind,1} = 'CNOT';
+                circuit{ckt_ind,2} = [j inds(k)];  % CNOT_{j->inds(k)}
+                ckt_ind = ckt_ind + 1;
+            end
+        end    
     else
+        % Partial Hadamards
         k = m - sum(diag(A));
         Uk = blkdiag(eye(k), zeros(m-k));
         Lmk = blkdiag(zeros(k), eye(m-k));
@@ -121,14 +100,4 @@ for i = 1:length(Decomp)
     end
 end    
             
-    function valid_perm = find_valid_perm(A)
-        Indices = cell(size(A,1),1);
-        for iter = 1:size(A,1)
-            Indices{iter,1} = find(A(iter,:) == 1);
-        end
-        Set = cartprod(Indices{:,1});
-        validP = find(sum(abs(bsxfun(@minus,sort(Set,2),1:size(A,1))), 2) == 0, 1, 'first');
-        valid_perm = Set(validP,:);
-    end
-
 end
