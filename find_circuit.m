@@ -6,8 +6,8 @@ function circuit = find_circuit(F)
 
 m = size(F,1)/2;
 I = eye(m);
-Z = zeros(m);
-Omega = [Z, I; I, Z];
+O = zeros(m);
+Omega = [O, I; I, O];
 
 if (~all(all(mod(F * Omega * F', 2) == Omega)))
     fprintf('\nInvalid symplectic matrix!\n');
@@ -19,7 +19,7 @@ Decomp = symp_mat_decompose(F);
 circuit = cell(1,2);
 ckt_ind = 1;
 
-for i = 1:length(Decomp)
+for i = 1:size(Decomp,1)
     if (all(all(Decomp{i} == eye(2*m))))
         continue;
     elseif (all(all(Decomp{i} == Omega)))
@@ -34,7 +34,7 @@ for i = 1:length(Decomp)
     C = Decomp{i}(m+(1:m),1:m);
     D = Decomp{i}(m+(1:m),m+(1:m));
     
-    if (all(A(:) == I(:)) && all(C(:) == Z(:)) && all(D(:) == I(:)))
+    if (all(A(:) == I(:)) && all(C(:) == O(:)) && all(D(:) == I(:)))
         % CZs and Phase
         S_ind = find(diag(B) == 1)';
         if (~isempty(S_ind))
@@ -53,14 +53,12 @@ for i = 1:length(Decomp)
                 ckt_ind = ckt_ind + 1;
             end
         end
-    elseif (all(B(:) == Z(:)) && all(C(:) == Z(:)))
+    elseif (all(B(:) == O(:)) && all(C(:) == O(:)))
         % CNOTs and Permutations
         % CAUTION: For qubits that act as both control and target, first
         %          implement the CNOTs where they act as control!
         %          To ensure this, we use LU decomposition over GF(2).
-        [L, U, P] = lu(A);   % P' * L * U = A
-        L = mod(L,2);
-        U = mod(U,2);
+        [L, U, P] = gf2lu(A);   % P' * L * U = A
         if (~all(P(:) == I(:)))
             circuit{ckt_ind,1} = 'Permute';
             circuit{ckt_ind,2} = (1:m)*P';

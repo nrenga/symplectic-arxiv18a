@@ -1,8 +1,6 @@
 function F = find_symp_mat(X, Y)
 % Find a binary symplectic matrix F that satisfies X*F = Y
 
-% Author: Narayanan Rengaswamy, Date: Feb. 20, 2018
-
 m = size(X,1);
 n = size(X,2)/2;
 F = eye(2*n);
