@@ -79,8 +79,15 @@ else
     return;
 end
 
-% Need to complete a symplectic basis for \mathbb{F}_2^{2m}
-U = [Xbar; S; Zbar];        
+% Need to find symplectic matrices that map the first 2m-k rows of H to U.
+% This corresponds to the action g E(a,b) g^{\dagger} = E[(a,b) F_g].
+% However our elementaty transformations only satisfy the equation
+% g^{\dagger} E(a,b) g = E[(a,b) F_g]. Hence we will find solutions F that
+% map rows of U to H and then take the inverse of each such solution.
+
+% First we need to complete a symplectic basis for \mathbb{F}_2^{2m}
+U = H;
+H = [Xbar; S; Zbar];        
 for i = 1:k
     h = zeros(2*m-k+(i-1),1);
     h(m-k+i) = 1;
@@ -101,33 +108,36 @@ end
 
 
 for i = 1:size(F_all,1)
+    F_all{i,1} = gf2matinv(F_all{i,1});
     F_all{i,2} = find_circuit(F_all{i,1});
     F_all{i,3} = size(F_all{i,2},1);   % Circuit depth
     
     % Check signs on conjugation with stabilizer generators
-    U = find_unitary(m, F_all{i,2});
+    Oper = find_unitary(m, F_all{i,2});
     v = zeros(2*m-k, 1);
-    for j = 1:k
-        sx = S(j, 1:m);
-        sz = S(j, m+(1:m));
-        s_u = find_unitary(m, {'X', find(sx == 1); 'Z', find(sz == 1); ...
-                                     'Y', find(sx+sz == 2)});
-        snormx = Snorm(j, 1:m);
-        snormz = Snorm(j, m+(1:m));
-        snorm_u = find_unitary(m, {'X', find(snormx == 1); ...
-                                    'Z', find(snormz == 1); ...
-                                     'Y', find(snormx + snormz == 2)});
-        s_u_new = U' * s_u * U;
-        if (norm(s_u_new(:) - (-snorm_u(:)), 'fro') < 1e-10)
+    for j = 1:(2*m-k)
+        hx = H(j, 1:m);
+        hz = H(j, m+(1:m));
+        iota = sqrt(-1);
+        h_u = find_unitary(m, {'X', find(hx + iota*hz == 1); ...
+                                  'Z', find(hx + iota*hz == iota); ...
+                                     'Y', find(hx + iota*hz == 1 + iota)});
+        hnewx = U(j, 1:m);
+        hnewz = U(j, m+(1:m));
+        hnew_u = find_unitary(m, {'X', find(hnewx + iota*hnewz == 1); ...
+                                    'Z', find(hnewx + iota*hnewz == iota); ...
+                                     'Y', find(hnewx + iota*hnewz == 1 + iota)});
+        h_u_new = Oper * h_u * Oper';
+        if (norm(h_u_new(:) - (-hnew_u(:)), 'fro') < 1e-10)
             v(j) = 1;
         else
-            if (~(norm(s_u_new(:) - snorm_u(:), 'fro') < 1e-10))
+            if (~(norm(h_u_new(:) - hnew_u(:), 'fro') < 1e-10))
                 fprintf('\nSomething is wrong for stabilizer %d!!\n', j);
             end
         end
     end
     if (any(v == 1))
-        choices = fftshift(gflineq_all([S; Xbar; Zbar], v)',2);
+        choices = fftshift(gflineq_all(H, v)',2);
         choices = choices(:,1:m) + sqrt(-1)*choices(:,m+(1:m));
         [~, cheap_ind] = min(sum(choices ~= 0, 2));
         x = choices(cheap_ind, :);

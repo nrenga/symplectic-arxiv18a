@@ -1,6 +1,6 @@
 function F_all = find_all_symp_mat(U, V, I, J)
 % Function fo find all symplectic matrices F that satisfy 
-% U([I,m+J],:)*F = V.
+% U([I,m+J],:)*F = V. Since F is symplectic, F*Omega*F' = Omega must hold.
 % Rows of U must form a symplectic basis for \mathbb{F}_2^{2m},
 % i.e., U must satisfy U*Omega*U' = Omega, where Omega = [0 I_m; I_m 0].
 % Number of rows of V must be equal to (length(I) + length(J)).

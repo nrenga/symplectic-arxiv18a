@@ -52,7 +52,9 @@ F_all_CNOT21 = find_logical_cliff(S, Xbar, Zbar, 'CNOT', [2 1], [], 'all');
 F_CNOT21 = F_all_CNOT21(CNOT21cheap_ind, :);
 
 % Targeted Hadamard gate on logical qubit 1
-F_all_H1 = find_logical_cliff(S, Xbar, Zbar, 'H', 1, [], 'all');
+% Snorm = [S(1,:) + S(2,:); S(2,:)];
+Snorm = S;
+F_all_H1 = find_logical_cliff(S, Xbar, Zbar, 'H', 1, Snorm, 'all');
 % Find cheapest circuit
 [H1depth, H1cheap_ind] = min(cellfun(@(a) a(1,1), F_all_H1(:,3)));
 F_H1 = F_all_H1(H1cheap_ind, :);
@@ -60,33 +62,33 @@ F_H1 = F_all_H1(H1cheap_ind, :);
 toc;
 
 %% Code to get logical Clifford operators for the [[5,1,3]] perfect code
-% clc
-% clear
-% close all
-% tic;
-% m = 5;
-% k = 4;
-% 
-% % Stabilizers
-% S = [ 1 0 0 1 0 , 0 1 1 0 0 ;
-%       0 1 0 0 1 , 0 0 1 1 0 ;
-%       1 0 1 0 0 , 0 0 0 1 1 ;
-%       0 1 0 1 0 , 1 0 0 0 1 ];
-% 
-% % Logical Paulis
-% Zbar = [ 0 0 0 0 0 , 1 1 1 1 1 ];
-% Xbar = [ 1 1 1 1 1 , 0 0 0 0 0 ];
-% 
-% % Phase gate on the logical qubit
-% F_all_S = find_logical_cliff(S, Xbar, Zbar, 'S', 1, [], 'all');
-% % Find cheapest circuit
-% [Sdepth, Scheap_ind] = min(cellfun(@(a) a(1,1), F_all_S(:,3)));
-% F_S = F_all_S(Scheap_ind, :);
-% 
-% % Hadamard gate on the logical qubit
-% F_all_H = find_logical_cliff(S, Xbar, Zbar, 'H', 1, [], 'all');
-% % Find cheapest circuit
-% [Hdepth, Hcheap_ind] = min(cellfun(@(a) a(1,1), F_all_H(:,3)));
-% F_H = F_all_H(Hcheap_ind, :);
-% 
-% toc;
+clc
+clear
+close all
+tic;
+m = 5;
+k = 4;
+
+% Stabilizers
+S = [ 1 0 0 1 0 , 0 1 1 0 0 ;
+      0 1 0 0 1 , 0 0 1 1 0 ;
+      1 0 1 0 0 , 0 0 0 1 1 ;
+      0 1 0 1 0 , 1 0 0 0 1 ];
+
+% Logical Paulis
+Zbar = [ 0 0 0 0 0 , 1 1 1 1 1 ];
+Xbar = [ 1 1 1 1 1 , 0 0 0 0 0 ];
+
+% Phase gate on the logical qubit
+F_all_S = find_logical_cliff(S, Xbar, Zbar, 'S', 1, [], 'all');
+% Find cheapest circuit
+[Sdepth, Scheap_ind] = min(cellfun(@(a) a(1,1), F_all_S(:,3)));
+F_S = F_all_S(Scheap_ind, :);
+
+% Hadamard gate on the logical qubit
+F_all_H = find_logical_cliff(S, Xbar, Zbar, 'H', 1, [], 'all');
+% Find cheapest circuit
+[Hdepth, Hcheap_ind] = min(cellfun(@(a) a(1,1), F_all_H(:,3)));
+F_H = F_all_H(Hcheap_ind, :);
+
+toc;
