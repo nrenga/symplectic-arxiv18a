@@ -174,7 +174,13 @@ for i = 1:size(F_all,1)
             v(j) = 1;
         else
             if (~(norm(h_u_new(:) - hnew_u(:), 'fro') < 1e-10))
-                fprintf('\nSomething is wrong for stabilizer %d!!\n', j);
+                if (j <= m-k)
+                    fprintf('\nSomething is wrong for logical Pauli X%d!!\n', j);
+                elseif (j > m)
+                    fprintf('\nSomething is wrong for logical Pauli Z%d!!\n', j-m);
+                else
+                    fprintf('\nSomething is wrong for stabilizer %d!!\n', j-(m-k));
+                end
             end
         end
     end
