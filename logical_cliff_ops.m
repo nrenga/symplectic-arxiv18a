@@ -66,6 +66,16 @@ F_all_Htrans = find_logical_cliff(S, Xbar, Zbar, {'H', 1:4}, Snorm, 'all');
 [Htransdepth, Htranscheap_ind] = min(cellfun(@(a) a(1,1), F_all_Htrans(:,3)));
 F_Htran = F_all_Htrans(Htranscheap_ind, :);
 
+% Logical Clifford circuit
+Snorm = S;
+% Snorm = [S(1,:) + S(2,:); S(2,:)];
+% Snorm = [S(2,:); S(1,:)];
+ckt1 = {'S', 2; 'CNOT', [1 3]; 'CZ', [3 4]};
+F_all_ckt1 = find_logical_cliff(S, Xbar, Zbar, ckt1, Snorm, 'all');
+% Find cheapest circuit
+[ckt1depth, ckt1cheap_ind] = min(cellfun(@(a) a(1,1), F_all_ckt1(:,3)));
+F_ckt1 = F_all_Htrans(ckt1cheap_ind, :);
+
 toc;
 
 %% Code to get logical Clifford operators for the [[5,1,3]] perfect code
