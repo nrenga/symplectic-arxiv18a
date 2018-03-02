@@ -4,28 +4,23 @@ function U = find_unitary(m, circuit)
 % specified below; 'd' is the depth of the circuit
 % 'U' is the overall unitary matrix for the given circuit
 
-% Author: Narayanan Rengaswamy, Date: Feb. 28, 2018
-
 % Each row of the cell array must be one of the following Clifford gates:
 % Gate is the desired gate; columns 1 and 2 are specifications for the gate
 % that form a row of the 'circuit' cell array.
+
 %                Gate                  |  Column 1  |   Column 2
 % -----------------------------------------------------------------
-% Pauli X on qubit 2                   |     'X'    |   [2]
 % Pauli X on qubits 2,4                |     'X'    |   [2 4]
-% Pauli Z on qubit 1                   |     'Z'    |   [1]
 % Pauli Z on qubits 1,5                |     'Z'    |   [1 5]
-% Pauli Y on qubit 3                   |     'Y'    |   [3]
 % Pauli Y on qubits 1,2,5              |     'Y'    |   [1 2 5]
-% Phase on qubit 1                     |     'S'    |   [1]
 % Phase on qubits 1,3                  |     'S'    |   [1 3]
-% Hadamard on qubit 4                  |     'H'    |   [4]
 % Hadamard on qubits 2,4,5             |     'H'    |   [2 4 5]
 % Controlled-Z on qubits 3,6           |    'CZ'    |   [3 6]
 % Controlled-NOT: qubit 2 controls 1   |   'CNOT'   |   [2 1]
+% Permutation (m=3): [1 2 3] -> [2 3 1]|  'Permute' |   [2 3 1]
 % -----------------------------------------------------------------
 
-% Example Circuit (m = 6): 
+% Example Circuit (m = 6 qubits): 
 % U = CZ_{26} * H1 * CNOT_{12} * H2 * CNOT_{24} * H3 * CZ_{14}
 % In circuit diagram the last CZ_{14} will appear first. This is because the
 % operator acts on state |v> as U|v>, and so |v> goes through the last
@@ -34,6 +29,8 @@ function U = find_unitary(m, circuit)
 % In this case, our specification for this function will be:
 % circuit = {'CZ', [1 4]; 'H', 3; 'CNOT', [2 4]; 'H', 2; 'CNOT', [1 2]; ...
 %                         'H', 1; 'CZ', [2 6]};
+
+% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
 
 
 I = eye(2);
@@ -52,10 +49,12 @@ E10 = e1 * e0';
 U = eye(2^m);
 for i = 1:size(circuit,1)
     gate = circuit{i,1};
+    qubits = circuit{i,2}(:)';
     if (strcmpi(gate, 'X'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits))
-            continue;
+            fprintf('\nPauli X Gate: Need to specify atleast one qubit!\n');
+            U = [];
+            return;
         end
         UX = 1;
         for j = 1:m
@@ -67,9 +66,10 @@ for i = 1:size(circuit,1)
         end
         U = UX * U;
     elseif (strcmpi(gate, 'Z'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits))
-            continue;
+            fprintf('\nPauli Z Gate: Need to specify atleast one qubit!\n');
+            U = [];
+            return;
         end
         UZ = 1;
         for j = 1:m
@@ -81,9 +81,10 @@ for i = 1:size(circuit,1)
         end
         U = UZ * U;
     elseif (strcmpi(gate, 'Y'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits))
-            continue;
+            fprintf('\nPauli Y Gate: Need to specify atleast one qubit!\n');
+            U = [];
+            return;
         end
         UY = 1;
         for j = 1:m
@@ -95,9 +96,10 @@ for i = 1:size(circuit,1)
         end
         U = UY * U;
     elseif (strcmpi(gate, 'S'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits))
-            continue;
+            fprintf('\nPhase Gate: Need to specify atleast one qubit!\n');
+            U = [];
+            return;
         end
         US = 1;
         for j = 1:m
@@ -109,9 +111,10 @@ for i = 1:size(circuit,1)
         end
         U = US * U;
     elseif (strcmpi(gate, 'H'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits))
-            continue;
+            fprintf('\nHadamard Gate: Need to specify atleast one qubit!\n');
+            U = [];
+            return;
         end
         UH = 1;
         for j = 1:m
@@ -123,10 +126,10 @@ for i = 1:size(circuit,1)
         end
         U = UH * U;
     elseif (strcmpi(gate, 'CZ'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits) || length(qubits) ~= 2)
-            fprintf('\nCZ gate needs exactly two qubits!\n');
-            continue;
+            fprintf('\nCZ Gate: Need to specify two qubits!\n');
+            U = [];
+            return;
         end
         UCZ1 = 1;
         UCZ2 = 1;
@@ -144,10 +147,10 @@ for i = 1:size(circuit,1)
         end
         U = (UCZ1 + UCZ2) * U;
     elseif (strcmpi(gate, 'CNOT'))
-        qubits = circuit{i,2}(:)';
         if (isempty(qubits) || length(qubits) ~= 2)
-            fprintf('\nCNOT gate needs exactly two qubits!\n');
-            continue;
+            fprintf('\nCNOT Gate: Need to specify two qubits!\n');
+            U = [];
+            return;
         end
         UCNOT1 = 1;
         UCNOT2 = 1;
@@ -167,8 +170,9 @@ for i = 1:size(circuit,1)
     elseif (strcmpi(gate, 'Permute'))
         desired_order = circuit{i,2}(:)';
         if (isempty(desired_order) || length(desired_order) ~= m)
-            fprintf('\nFor permutation, need to give %d qubits!\n', m);
-            continue;
+            fprintf('\nPermutation: Need to specify %d qubits!\n', m);
+            U = [];
+            return;
         end
         current_order = 1:m;
         for j = 1:m
@@ -203,7 +207,8 @@ for i = 1:size(circuit,1)
         end
     else  % handles all unrecognized gates
         fprintf('\nfind_unitary: Unrecognized gate encountered!\n');
-        continue;
+        U = [];
+        return;
     end
 end
 

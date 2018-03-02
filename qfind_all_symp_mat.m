@@ -11,7 +11,7 @@ function F_all = qfind_all_symp_mat(U, V)
 % that complete the symplectic basis.
 % Number of rows of V must be equal to (2m - k).
 
-% Author: Narayanan Rengaswamy, Date: Feb. 20, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
 
 m = size(U,2)/2;
 k = 2*m - size(V,1);

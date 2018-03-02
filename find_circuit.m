@@ -2,7 +2,7 @@ function circuit = find_circuit(F)
 % Function to find a circuit for the given symplectic transformation F
 % Uses Trung Can's algorithm to decompose F into elementary forms
 
-% Author: Narayanan Rengaswamy, Date: Feb. 22, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
 
 m = size(F,1)/2;
 I = eye(m);
@@ -15,7 +15,7 @@ if (~all(all(mod(F * Omega * F', 2) == Omega)))
     return;
 end
 
-Decomp = symp_mat_decompose(F);
+Decomp = symp_mat_decompose(F);   % Trung Can's decomposition
 circuit = cell(1,2);
 ckt_ind = 1;
 
@@ -58,7 +58,7 @@ for i = 1:size(Decomp,1)
         % CAUTION: For qubits that act as both control and target, first
         %          implement the CNOTs where they act as control!
         %          To ensure this, we use LU decomposition over GF(2).
-        [L, U, P] = gf2lu(A);   % P' * L * U = A
+        [L, U, P] = gf2lu(A);   % P' * L * U = A (P is a permutation matrix)
         if (~all(P(:) == I(:)))
             circuit{ckt_ind,1} = 'Permute';
             circuit{ckt_ind,2} = (1:m)*P';

@@ -6,7 +6,7 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *logical_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
 
-*logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution.
+*logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution. It contains two examples: the [[6,4,2]] CSS code and the [[5,1,3]] perfect code.
 
 
 **Functions**:

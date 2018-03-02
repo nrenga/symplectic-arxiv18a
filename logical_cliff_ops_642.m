@@ -7,7 +7,7 @@
 % paper "Synthesis of Logical Clifford Operators via Symplectic Geometry",
 % available at https://arxiv.org/abs/
 
-% Author: Narayanan Rengaswamy, Date: Feb. 20, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
 
 clc
 clear
@@ -99,6 +99,15 @@ F_all_H1 = qfind_all_symp(k, U, F_H1);
 % F_all_H1 = qfind_all_symp_mat(U, H_H1);    
 % F_all_H1 = find_all_symp_mat(U, H_H1, 1:m, 1:m-k);    
 
+
+%% Function to compute the symplectic inner product over GF(2)
+function inn = symp_inn_prdt(X, Y)
+% Compute the inner product between the corresponding rows of X and Y.
+
+inn = mod(sum(X.*fftshift(Y,2), 2), 2);
+
+end
+
 %% Function to calculate one solution for each logical Clifford operator
 
 function F = find_one_symp(X, Y)
@@ -116,7 +125,7 @@ for i = 1:m
     if (all(x_it == y_i))
         continue;
     end
-    if (symp_inn_pdt(x_it, y_i) == 1)
+    if (symp_inn_prdt(x_it, y_i) == 1)
         h_i = mod(x_it + y_i, 2);
         F = mod(F * Z_h(h_i), 2);
     else
@@ -131,7 +140,7 @@ end
 
     function w = find_w(x,y,Ys)
         A = fftshift([x; y; Ys],2);
-        b = [1; 1; symp_inn_pdt(Ys,repmat(y,size(Ys,1),1))];
+        b = [1; 1; symp_inn_prdt(Ys,repmat(y,size(Ys,1),1))];
         w = gflineq(A,b)';
     end
 
