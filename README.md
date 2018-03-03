@@ -27,6 +27,8 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *find_unitary*.m: A function to calculate the unitary operator corresponding to a given Clifford circuit.
 
+*calculate_conj.m*: A function to calculate the action of a Clifford circuit on an Pauli operator under conjugation.
+
 *symp_inn_pdt.m*: A one-line function to compute symplectic inner product between the corresponding rows of two matrices.
 
 *gf2rref.m*: A function to reduce a binary matrix to its reduced row echelon form over GF(2). Developed by "esromneb" and modified by Narayanan Rengaswamy (available on GitHub Gist).

@@ -16,12 +16,13 @@ function F_all = find_logical_cliff(S, Xbar, Zbar, circuit, Snorm, no_of_solns)
 % column is the logical gate and the second column is the vector of logical
 % qubits the gate is applied on. Here are the formats.
 
-%            Logical Gate              |  Column 1  |  Column 2
+%            Logical Gate                 |  Column 1  |  Column 2
 % -----------------------------------------------------------------
-% Phase on (logical) qubits 1,3,5      |     'S'    |   [1 3 5]
-% Targeted Hadamard on qubits 2,4      |     'H'    |   [2 4]
-% Controlled-Z on qubits 3,6           |    'CZ'    |   [3 6]
-% Controlled-NOT: qubit 2 controls 1   |   'CNOT'   |   [2 1]
+% Phase on (logical) qubits 1,3,5         |     'S'    |   [1 3 5]
+% Targeted Hadamard on qubits 2,4         |     'H'    |   [2 4]
+% Controlled-Z on qubits 3,6              |    'CZ'    |   [3 6]
+% Controlled-NOT: qubit 2 controls 1      |   'CNOT'   |   [2 1]
+% Permutation (m-k=3): [1 2 3] -> [2 3 1] |  'Permute' |   [2 3 1]
 % -----------------------------------------------------------------
 
 % Example Circuit (m-k = 4 logical qubits): 
@@ -84,6 +85,14 @@ for i = 1:size(circuit,1)
             H(qubits(1),:) = mod(H(qubits(1),:) + H(qubits(2),:), 2);
             H(m+qubits(2),:) = mod(H(m+qubits(2),:) + H(m+qubits(1),:), 2);
         end
+    elseif (strcmpi(gate, 'Permute'))
+        if (isempty(qubits) || length(qubits) ~= m-k)
+            fprintf('\nPermutation: Need to specify %d qubits!\n', m-k);
+            return;
+        else
+            H(1:m-k,:) = H(qubits,:);
+            H(m+(1:m-k),:) = H(m+qubits,:);
+        end
     elseif (strcmpi(gate, 'H'))
         if (isempty(qubits))
             fprintf('\nHadamard Gate: Need to specify atleast one qubit!\n');
@@ -127,53 +136,56 @@ for i = 1:size(F_all,1)
     F_all{i,3} = size(F_all{i,2},1);   % Circuit depth
     
     % Check signs on conjugation with stabilizer generators, logical Paulis
-    Oper = find_unitary(m, F_all{i,2});
     v = zeros(2*m-k, 1);
     for j = 1:(2*m-k)
         iota = sqrt(-1);
         h = U(j, 1:m) + iota * U(j, m+(1:m));
-        hx = find(h == 1);
-        hz = find(h == iota);
-        hy = find(h == 1 + iota);
-        h_ckt = cell(1,2);
-        ind = 1;
-        if (~isempty(hx))
-            h_ckt(ind,:) = {'X', hx};
-            ind = ind + 1;
+        h_ckt = {'', []};
+        for q = 1:m
+            if (h(q) == 1)
+                h_ckt(1,:) = {strcat(h_ckt{1,1}, 'X'), [h_ckt{1,2}, q]};
+            elseif (h(q) == iota)
+                h_ckt(1,:) = {strcat(h_ckt{1,1}, 'Z'), [h_ckt{1,2}, q]};
+            elseif (h(q) == 1 + iota)
+                h_ckt(1,:) = {strcat(h_ckt{1,1}, 'Y'), [h_ckt{1,2}, q]};
+            else
+                continue;
+            end
         end
-        if (~isempty(hz))
-            h_ckt(ind,:) = {'Z', hz};
-            ind = ind + 1;
-        end
-        if (~isempty(hy))
-            h_ckt(ind,:) = {'Y', hy};
-        end
-        h_u = find_unitary(m, h_ckt);
-        
+      
         hnew = H(j, 1:m) + iota * H(j, m+(1:m));
-        hnewx = find(hnew == 1);
-        hnewz = find(hnew == iota);
-        hnewy = find(hnew == 1 + iota);
-        hnew_ckt = cell(1,2);
-        ind = 1;
-        if (~isempty(hnewx))
-            hnew_ckt(ind,:) = {'X', hnewx};
-            ind = ind + 1;
+        hnew_ckt = {'', []};
+        for q = 1:m
+            if (hnew(q) == 1)
+                hnew_ckt(1,:) = {strcat(hnew_ckt{1,1}, 'X'), [hnew_ckt{1,2}, q]};
+            elseif (hnew(q) == iota)
+                hnew_ckt(1,:) = {strcat(hnew_ckt{1,1}, 'Z'), [hnew_ckt{1,2}, q]};
+            elseif (hnew(q) == 1 + iota)
+                hnew_ckt(1,:) = {strcat(hnew_ckt{1,1}, 'Y'), [hnew_ckt{1,2}, q]};
+            else
+                continue;
+            end
         end
-        if (~isempty(hnewz))
-            hnew_ckt(ind,:) = {'Z', hnewz};
-            ind = ind + 1;
-        end
-        if (~isempty(hnewy))
-            hnew_ckt(ind,:) = {'Y', hnewy};
-        end
-        hnew_u = find_unitary(m, hnew_ckt);
         
-        h_u_new = Oper * h_u * Oper';
-        if (norm(h_u_new(:) - (-hnew_u(:)), 'fro') < 1e-10)
+        h_new_ckt = calculate_conj(m, h_ckt, F_all{i,2});
+        out_sign = 1;
+        if (strcmpi(h_new_ckt{1,1}(1), '-'))
+            out_sign = -1;
+            h_new_ckt = {h_new_ckt{1,1}(2:end), h_new_ckt{1,2}(2:end)};
+        elseif (strcmpi(h_new_ckt{1,1}(1), 'i'))
+            out_sign = sqrt(-1);
+            h_new_ckt = {h_new_ckt{1,1}(2:end), h_new_ckt{1,2}(2:end)};
+        elseif (strcmpi(h_new_ckt{1,1}(1), 'j'))
+            out_sign = -sqrt(-1);
+            h_new_ckt = {h_new_ckt{1,1}(2:end), h_new_ckt{1,2}(2:end)};
+        end
+        
+        if (strcmpi(hnew_ckt{1,1}, h_new_ckt{1,1}) && ...
+                all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == -1))
             v(j) = 1;
         else
-            if (~(norm(h_u_new(:) - hnew_u(:), 'fro') < 1e-10))
+            if (~(strcmpi(hnew_ckt{1,1}, h_new_ckt{1,1}) && ...
+                    all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == 1)))
                 if (j <= m-k)
                     fprintf('\nSomething is wrong for logical Pauli X%d!!\n', j);
                 elseif (j > m)

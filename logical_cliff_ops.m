@@ -16,7 +16,7 @@ clear
 close all
 tic;
 m = 6;
-k = 2;
+k = 2;  % implies 2^(k*(k+1)/2) solutions for a logical Clifford circuit!
 
 % Stabilizers
 S = [ 1 1 1 1 1 1, 0 0 0 0 0 0 ;
@@ -84,7 +84,7 @@ toc;
 % close all
 % tic;
 % m = 5;
-% k = 4;
+% k = 4;  % implies 2^(k*(k+1)/2) solutions for a logical Clifford circuit!
 % 
 % % Stabilizers
 % S = [ 1 0 0 1 0 , 0 1 1 0 0 ;
@@ -109,3 +109,36 @@ toc;
 % F_H = F_all_H(Hcheap_ind, :);
 % 
 % toc;
+
+%% The [[15,7,3]] Hamming code
+
+% clc
+% clear
+% close all
+% 
+% m = 15;
+% k = 8;  % implies 2^(k*(k+1)/2) solutions for a logical Clifford circuit!
+% 
+% % Parity-check matrix for the [15,11,3] binary Hamming code
+% H = de2bi((1:15)',4,'left-msb')';
+% S = [ H, zeros(4,m);
+%       zeros(4,m), H ];
+% 
+% L = [ 1 1 0 1 0 0 0 1 0 0 0 0 0 0 1 ;...
+%       1 1 0 0 1 0 0 0 0 1 0 1 0 0 0 ;...
+%       1 1 0 0 0 1 0 0 0 0 1 0 0 1 0 ;...
+%       1 1 0 0 0 0 1 0 1 0 0 0 1 0 0 ;...
+%       1 0 0 1 0 1 0 0 1 1 0 0 0 0 0 ;...
+%       1 0 0 1 0 0 1 0 0 0 0 1 0 1 0 ;...
+%       1 0 0 0 0 0 0 1 0 1 0 0 1 1 0 ];    % Logical Xs and Zs for [[15,7,3]]
+% 
+% Xbar = [ L, zeros(7,m) ];
+% Zbar = [ zeros(7,m), L ];
+% 
+% Snorm = S;
+% ckt1 = {'Permute', [2 3 1 4:7]};
+% F_all_ckt1 = find_logical_cliff(S, Xbar, Zbar, ckt1, Snorm, 1);
+% % Find cheapest circuit
+% % [ckt1depth, ckt1cheap_ind] = min(cellfun(@(a) a(1,1), F_all_ckt1(:,3)));
+% % F_ckt1 = F_all_Htrans(ckt1cheap_ind, :);
+
