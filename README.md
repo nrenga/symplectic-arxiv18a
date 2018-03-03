@@ -31,7 +31,7 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *symp_inn_pdt.m*: A one-line function to compute symplectic inner product between the corresponding rows of two matrices.
 
-*gf2rref.m*: A function to reduce a binary matrix to its reduced row echelon form over GF(2). Developed by "esromneb" and modified by Narayanan Rengaswamy (available on GitHub Gist).
+*gf2rref.m*: A function to reduce a binary matrix to its reduced row echelon form over GF(2). Developed by "esromneb" as "g2rref.m" and modified by Narayanan Rengaswamy (available on GitHub Gist).
 
 *gf2matinv.m*: Uses the g2rref.m function to calculate the inverse of a binary matrix over GF(2).
 
