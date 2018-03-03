@@ -9,7 +9,7 @@
 % "Synthesis of Logical Clifford Operators via Symplectic Geometry", 
 % available at https://arxiv.org/abs/
 
-% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 3, 2018
 
 clc
 clear

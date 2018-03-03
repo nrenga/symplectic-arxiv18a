@@ -1,4 +1,4 @@
-function op_out = calculate_conj(m, op_in, circuit)
+function op_out = calc_conjugate(m, op_in, circuit)
 % Function to compute the effect of a Clifford circuit on an input Pauli
 % operator under conjugation, i.e. technically this computes
 % op_out = circuit * op_in * circuit'.
@@ -39,7 +39,7 @@ function op_out = calculate_conj(m, op_in, circuit)
 % If we want to compute its effect on the Pauli operator X_1*Y_2*Z_4*X_6,
 % then op_in = {'XYZX', [1, 2, 4, 6]}.
 
-% Author: Narayanan Rengaswamy, Date: Mar. 2, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 3, 2018
 
 I = eye(2);
 X = [0 1; 1 0];

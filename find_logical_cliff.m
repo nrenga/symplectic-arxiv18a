@@ -35,7 +35,7 @@ function F_all = find_logical_cliff(S, Xbar, Zbar, circuit, Snorm, no_of_solns)
 % circuit = {'CZ', [1 4]; 'H', 3; 'CNOT', [1 3]; 'H', 2; 'CNOT', [1 2]; ...
 %                         'H', 1; 'CZ', [2 4]};
 
-% Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
+% Author: Narayanan Rengaswamy, Date: Mar. 3, 2018
 
 if (nargin <= 4)
     Snorm = S;   % Assume physical operator for 'gate' must centralize S
@@ -167,7 +167,7 @@ for i = 1:size(F_all,1)
             end
         end
         
-        h_new_ckt = calculate_conj(m, h_ckt, F_all{i,2});
+        h_new_ckt = calc_conjugate(m, h_ckt, F_all{i,2});
         out_sign = 1;
         if (strcmpi(h_new_ckt{1,1}(1), '-'))
             out_sign = -1;
