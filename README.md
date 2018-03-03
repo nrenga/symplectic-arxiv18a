@@ -6,7 +6,7 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *logical_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
 
-*logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution. It contains two examples: the [[6,4,2]] CSS code and the [[5,1,3]] perfect code.
+*logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution. It contains three examples: the [[6,4,2]] CSS code, the [[5,1,3]] perfect code and the [[15,7,3]] Hamming CSS code.
 
 
 **Functions**:
@@ -27,19 +27,19 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *find_unitary*.m: A function to calculate the unitary operator corresponding to a given Clifford circuit.
 
-*calc_conjugate.m*: A function to calculate the action of a Clifford circuit on an Pauli operator under conjugation.
+*calc_conjugate.m*: A function to calculate the action of a Clifford circuit on an input Pauli operator under conjugation.
 
 *symp_inn_pdt.m*: A one-line function to compute symplectic inner product between the corresponding rows of two matrices.
 
-*gf2rref.m*: A function to reduce a binary matrix to its reduced row echelon form over GF(2). Developed by "esromneb" and modified by Narayanan Rengaswamy (available on GitHub Gist).
+*gf2rref.m*: A function to reduce a binary matrix to its reduced row echelon form over GF(2). Developed by "esromneb" as "g2rref.m" and modified by Narayanan Rengaswamy (available on GitHub Gist).
 
 *gf2matinv.m*: Uses the g2rref.m function to calculate the inverse of a binary matrix over GF(2).
 
-*gflineq.m*: MATLAB in-built function (from Communication Toolbox) to solve a system of linear equations by Gaussian elimination.
+*gflineq.m*: MATLAB in-built function (from Communications System Toolbox) to solve a system of linear equations by Gaussian elimination.
 
 *gflineq_all.m*: A function to solve a system of linear equations by Gaussian elimination and determine all the solutions.
 
-*gf2lu.m*: A function to perform LU decomposition on a binary matrix. Uses the algorithm given by Trefethen and Bau in "Numerical Linear Algebra".
+*gf2lu.m*: A function to perform LU decomposition on a binary matrix. Uses the algorithm given by Trefethen and Bau in the book "Numerical Linear Algebra".
 
 
 **Data**:
