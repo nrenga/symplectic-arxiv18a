@@ -35,7 +35,7 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 *gf2matinv.m*: Uses the g2rref.m function to calculate the inverse of a binary matrix over GF(2).
 
-*gflineq.m*: MATLAB in-built function (from Communication Toolbox) to solve a system of linear equations by Gaussian elimination.
+*gflineq.m*: MATLAB in-built function (from Communications System Toolbox) to solve a system of linear equations by Gaussian elimination.
 
 *gflineq_all.m*: A function to solve a system of linear equations by Gaussian elimination and determine all the solutions.
 
