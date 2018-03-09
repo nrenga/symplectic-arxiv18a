@@ -106,7 +106,7 @@ for i = 1:size(circuit,1)
     end
 end
 
-% Need to find symplectic matrices that map the first 2m-k rows of H to U.
+% Need to find symplectic matrices that map the first 2m-k rows of U to H.
 % This corresponds to the action g*E(a,b)*g^{\dagger} = E([a,b]*F_g).
 
 % First we need to complete a symplectic basis for \mathbb{F}_2^{2m}
