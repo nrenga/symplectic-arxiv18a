@@ -18,7 +18,7 @@ function F_all = find_logical_cliff(S, Xbar, Zbar, circuit, Snorm, no_of_solns)
 
 %            Logical Gate                 |  Column 1  |  Column 2
 % -----------------------------------------------------------------
-% Phase on (logical) qubits 1,3,5         |     'S'    |   [1 3 5]
+% Phase on (logical) qubits 1,3,5         |     'P'    |   [1 3 5]
 % Targeted Hadamard on qubits 2,4         |     'H'    |   [2 4]
 % Controlled-Z on qubits 3,6              |    'CZ'    |   [3 6]
 % Controlled-NOT: qubit 2 controls 1      |   'CNOT'   |   [2 1]
@@ -62,7 +62,7 @@ for i = 1:size(circuit,1)
         fprintf('\nLogical qubit index exceeds %d...!\n', m-k);
         return;
     end
-    if (strcmpi(gate, 'S'))
+    if (strcmpi(gate, 'P'))
         if (isempty(qubits))
             fprintf('\nPhase Gate: Need to specify at least one qubit!\n');
             return;

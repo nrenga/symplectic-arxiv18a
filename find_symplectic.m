@@ -12,8 +12,8 @@ function [F, A, B, C, D] = find_symplectic(m, circuit)
 
 %                Gate                  |  Column 1  |   Column 2
 % -----------------------------------------------------------------
-% Phase on qubit 1                     |     'S'    |   [1]
-% Phase on qubits 1,3                  |     'S'    |   [1 3]
+% Phase on qubit 1                     |     'P'    |   [1]
+% Phase on qubits 1,3                  |     'P'    |   [1 3]
 % Hadamard on qubits 2,4,5             |     'H'    |   [2 4 5]
 % Controlled-Z on qubits 3,6           |    'CZ'    |   [3 6]
 % Controlled-NOT: qubit 2 controls 1   |   'CNOT'   |   [2 1]
@@ -43,15 +43,15 @@ O = zeros(m);
 for i = 1:d
     gate = circuit{i,1};
     qubits = circuit{i,2}(:)';
-    if (strcmpi(gate, 'S'))
+    if (strcmpi(gate, 'P'))
         if (isempty(qubits))
             fprintf('\nPhase Gate: Need to specify atleast one qubit!\n');
             F = [];
             return;
         end
         B = diag(mod(sum(I(qubits,:),1),2));
-        FS = [I, B; O, I];
-        F = mod(F * FS, 2);
+        FP = [I, B; O, I];
+        F = mod(F * FP, 2);
     elseif (strcmpi(gate, 'H'))
         if (isempty(qubits))
             fprintf('\nHadamard Gate: Need to specify atleast one qubit!\n');

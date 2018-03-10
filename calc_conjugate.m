@@ -20,7 +20,7 @@ function op_out = calc_conjugate(m, op_in, circuit)
 % Pauli X on qubits 2,4                |     'X'    |   [2 4]
 % Pauli Z on qubits 1,5                |     'Z'    |   [1 5]
 % Pauli Y on qubits 1,2,5              |     'Y'    |   [1 2 5]
-% Phase on qubits 1,3                  |     'S'    |   [1 3]
+% Phase on qubits 1,3                  |     'P'    |   [1 3]
 % Hadamard on qubits 2,4,5             |     'H'    |   [2 4 5]
 % Controlled-Z on qubits 3,6           |    'CZ'    |   [3 6]
 % Controlled-NOT: qubit 2 controls 1   |   'CNOT'   |   [2 1]
@@ -45,7 +45,7 @@ I = eye(2);
 X = [0 1; 1 0];
 Z = [1 0; 0 -1];
 Y = sqrt(-1) * X * Z;
-S = [1 0; 0 sqrt(-1)];
+P = [1 0; 0 sqrt(-1)];
 H = 1/sqrt(2) * (X + Z);
 e0 = [1; 0];
 e1 = [0; 1];
@@ -58,15 +58,15 @@ Pauli_in = cell(m,1);
 for i = 1:m
     ind = find(op_in{1,2} == i, 1);
     if (~isempty(ind))
-        P = op_in{1,1}(ind);
+        Pli = op_in{1,1}(ind);
     else
-        P = 'I';
+        Pli = 'I';
     end
-    if (strcmpi(P, 'X'))
+    if (strcmpi(Pli, 'X'))
         Pauli_in{i,1} = X;
-    elseif (strcmpi(P, 'Z'))
+    elseif (strcmpi(Pli, 'Z'))
         Pauli_in{i,1} = Z;
-    elseif (strcmpi(P, 'Y'))
+    elseif (strcmpi(Pli, 'Y'))
         Pauli_in{i,1} = Y;
     else
         Pauli_in{i,1} = I;
@@ -104,14 +104,14 @@ for i = 1:size(circuit,1)
         for j = 1:length(qubits)
             Pauli_out{qubits(j),1} = Y * Pauli_out{qubits(j),1} * Y';
         end
-    elseif (strcmpi(gate, 'S'))
+    elseif (strcmpi(gate, 'P'))
         if (isempty(qubits))
             fprintf('\nPhase Gate: Need to specify atleast one qubit!\n');
             op_out = [];
             return;
         end
         for j = 1:length(qubits)
-            Pauli_out{qubits(j),1} = S * Pauli_out{qubits(j),1} * S';
+            Pauli_out{qubits(j),1} = P * Pauli_out{qubits(j),1} * P';
         end
     elseif (strcmpi(gate, 'H'))
         if (isempty(qubits))

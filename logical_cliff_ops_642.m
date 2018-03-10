@@ -37,20 +37,20 @@ Ybar = mod(Xbar + Zbar, 2);
 % A symplectic basis for \mathbb{F}_2^{12} using S, Xbar, Zbar
 U = [ Xbar; S; Zbar; [zeros(1,11) 1]; [1 zeros(1,11)]];
 
-%% Solve for logical Phase gate S1bar
+%% Solve for logical Phase gate P1bar
 
-G_S1 = [ Xbar(1,:); Xbar(2:end,:); S; Zbar];
-H_S1 = [ Ybar(1,:); Xbar(2:end,:); S; Zbar];
+G_P1 = [ Xbar(1,:); Xbar(2:end,:); S; Zbar];
+H_P1 = [ Ybar(1,:); Xbar(2:end,:); S; Zbar];
 
 % Find one solution using transvections
-F_S1 = find_one_symp(G_S1,H_S1);
+F_P1 = find_one_symp(G_P1,H_P1);
 
 % Find all solutions using dual subspace idea
-F_all_S1 = qfind_all_symp(k, U, F_S1);    
+F_all_P1 = qfind_all_symp(k, U, F_P1);    
 
 % Can also do one of the following:
-% F_all_S1 = qfind_all_symp_mat(U, H_S1);    
-% F_all_S1 = find_all_symp_mat(U, H_S1, 1:m, 1:m-k);    
+% F_all_P1 = qfind_all_symp_mat(U, H_P1);    
+% F_all_P1 = find_all_symp_mat(U, H_P1, 1:m, 1:m-k);    
 
 %% Solve for logical CZ gate CZ12bar
 

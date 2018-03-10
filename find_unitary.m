@@ -13,7 +13,7 @@ function U = find_unitary(m, circuit)
 % Pauli X on qubits 2,4                |     'X'    |   [2 4]
 % Pauli Z on qubits 1,5                |     'Z'    |   [1 5]
 % Pauli Y on qubits 1,2,5              |     'Y'    |   [1 2 5]
-% Phase on qubits 1,3                  |     'S'    |   [1 3]
+% Phase on qubits 1,3                  |     'P'    |   [1 3]
 % Hadamard on qubits 2,4,5             |     'H'    |   [2 4 5]
 % Controlled-Z on qubits 3,6           |    'CZ'    |   [3 6]
 % Controlled-NOT: qubit 2 controls 1   |   'CNOT'   |   [2 1]
@@ -37,7 +37,7 @@ I = eye(2);
 X = [0 1; 1 0];
 Z = [1 0; 0 -1];
 Y = sqrt(-1) * X * Z;
-S = [1 0; 0 sqrt(-1)];
+P = [1 0; 0 sqrt(-1)];
 H = 1/sqrt(2) * (X + Z);
 e0 = [1; 0];
 e1 = [0; 1];
@@ -95,21 +95,21 @@ for i = 1:size(circuit,1)
             end
         end
         U = UY * U;
-    elseif (strcmpi(gate, 'S'))
+    elseif (strcmpi(gate, 'P'))
         if (isempty(qubits))
             fprintf('\nPhase Gate: Need to specify atleast one qubit!\n');
             U = [];
             return;
         end
-        US = 1;
+        UP = 1;
         for j = 1:m
             if (~isempty(intersect(qubits,j)))
-                US = kron(US, S);
+                UP = kron(UP, P);
             else
-                US = kron(US, I);
+                UP = kron(UP, I);
             end
         end
-        U = US * U;
+        U = UP * U;
     elseif (strcmpi(gate, 'H'))
         if (isempty(qubits))
             fprintf('\nHadamard Gate: Need to specify atleast one qubit!\n');

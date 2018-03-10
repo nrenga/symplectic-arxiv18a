@@ -36,10 +36,10 @@ for i = 1:size(Decomp,1)
     
     if (all(A(:) == I(:)) && all(C(:) == O(:)) && all(D(:) == I(:)))
         % CZs and Phase
-        S_ind = find(diag(B) == 1)';
-        if (~isempty(S_ind))
-            circuit{ckt_ind,1} = 'S';
-            circuit{ckt_ind,2} = S_ind;
+        P_ind = find(diag(B) == 1)';
+        if (~isempty(P_ind))
+            circuit{ckt_ind,1} = 'P';
+            circuit{ckt_ind,2} = P_ind;
             ckt_ind = ckt_ind + 1;
         end
         
