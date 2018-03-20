@@ -3,9 +3,11 @@
 % This script is standalone unless the commented lines suggesting to use
 % the functions qfind_all_symp_mat or find_all_symp_mat are uncommented.
 
-% This script reproduces the results published in Appendix II of the
+% This script reproduces the results published in Appendix III of the
 % paper "Synthesis of Logical Clifford Operators via Symplectic Geometry",
-% available at https://arxiv.org/abs/
+% available at https://arxiv.org/abs/1803.06987
+
+% Code: https://github.com/nrenga/symplectic-arxiv18a
 
 % Author: Narayanan Rengaswamy, Date: Mar. 1, 2018
 
