@@ -243,13 +243,13 @@ end
             PinY = kron(Y, inp);
         end
         Pout = gate * Pin * gate';
-        if (all(all(Pout == PinX)))
+        if (norm(Pout(:) - PinX(:)) < 1e-10) % (all(all(Pout == PinX)))
             other = X;
-        elseif (all(all(Pout == PinZ)))
+        elseif (norm(Pout(:) - PinZ(:)) < 1e-10) % (all(all(Pout == PinZ)))
             other = Z;
-        elseif (all(all(Pout == PinY)))
+        elseif (norm(Pout(:) - PinY(:)) < 1e-10) % (all(all(Pout == PinY)))
             other = Y;
-        elseif (all(all(Pout == Pin)))
+        elseif (norm(Pout(:) - Pin(:)) < 1e-10) % (all(all(Pout == Pin)))
             other = I;
         else
             fprintf('\ncalculate_conj: Something wrong in find_other...');
