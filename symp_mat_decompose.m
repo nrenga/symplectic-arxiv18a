@@ -11,6 +11,17 @@ O = zeros(m);
 U = @(k) (blkdiag(eye(k), zeros(m-k)));
 L = @(k) (blkdiag(zeros(m-k), eye(k)));
 
+A = F(1:m,1:m);
+B = F(1:m,m+(1:m));
+C = F(m+(1:m),1:m);
+D = F(m+(1:m),m+(1:m));
+if ((all(A(:) == I(:)) && all(C(:) == O(:)) && all(D(:) == I(:))) || ...
+        (all(B(:) == O(:)) && all(C(:) == O(:))) || ...
+            (all(all(F == [O, I; I, O]))))
+        Decomp = {F};
+        return;
+end
+
 % Elementary Symplectic Transformations
 Omega = [O, I; I, O];     % Transversal Hadamards
 Elem1 = @(Q) (blkdiag(Q, gf2matinv(Q)'));  % CNOTs, Permutations

@@ -53,58 +53,9 @@ m = m/2;
 tot = 2^(k*(k+1)/2);
 F_all = cell(1,3);
 
+Fin = find_symplectic(m-k, circuit);
 H = [Xbar; Snorm; Zbar];
-
-for i = 1:size(circuit,1)
-    gate = circuit{i,1};
-    qubits = circuit{i,2};
-    if (any(qubits > m-k))
-        fprintf('\nLogical qubit index exceeds %d...!\n', m-k);
-        return;
-    end
-    if (strcmpi(gate, 'P'))
-        if (isempty(qubits))
-            fprintf('\nPhase Gate: Need to specify at least one qubit!\n');
-            return;
-        else
-            H(qubits,:) = mod(H(qubits,:) + H(m+qubits,:), 2);
-        end
-    elseif (strcmpi(gate, 'CZ'))
-        if (isempty(qubits) || length(qubits) ~= 2)
-            fprintf('\nCZ Gate: Need to specify two qubits!\n');
-            return;
-        else
-            H(qubits(1),:) = mod(H(qubits(1),:) + H(m+qubits(2),:), 2);
-            H(qubits(2),:) = mod(H(qubits(2),:) + H(m+qubits(1),:), 2);
-        end
-    elseif (strcmpi(gate, 'CNOT'))
-        if (isempty(qubits) || length(qubits) ~= 2)
-            fprintf('\nCNOT Gate: Need to specify two qubits!\n');
-            return;
-        else
-            H(qubits(1),:) = mod(H(qubits(1),:) + H(qubits(2),:), 2);
-            H(m+qubits(2),:) = mod(H(m+qubits(2),:) + H(m+qubits(1),:), 2);
-        end
-    elseif (strcmpi(gate, 'Permute'))
-        if (isempty(qubits) || length(qubits) ~= m-k)
-            fprintf('\nPermutation: Need to specify %d qubits!\n', m-k);
-            return;
-        else
-            H(1:m-k,:) = H(qubits,:);
-            H(m+(1:m-k),:) = H(m+qubits,:);
-        end
-    elseif (strcmpi(gate, 'H'))
-        if (isempty(qubits))
-            fprintf('\nHadamard Gate: Need to specify atleast one qubit!\n');
-            return;
-        else
-            H([qubits, m+qubits],:) = H([m+qubits, qubits],:);
-        end
-    else
-        fprintf('\nUnknown gate!\n');
-        return;
-    end
-end
+H([1:(m-k), m+(1:m-k)],:) = mod(Fin * H([1:(m-k), m+(1:m-k)],:), 2);
 
 % Need to find symplectic matrices that map the first 2m-k rows of U to H.
 % This corresponds to the action g*E(a,b)*g^{\dagger} = E([a,b]*F_g).
@@ -121,7 +72,7 @@ if (no_of_solns == 1)
     F_all = cell(1,3);
     F_all{1,1} = find_symp_mat(U(1:(2*m-k), :), H);
 else
-    fprintf('\nCalculating all %d solutions! Please be patient...\n', tot);
+%     fprintf('\nCalculating all %d solutions! Please be patient...\n', tot);
     F_all = cell(tot,3);
     F_all(:,1) = qfind_all_symp_mat(U, H);
 
@@ -141,7 +92,7 @@ for i = 1:size(F_all,1)
         iota = sqrt(-1);
         h = U(j, 1:m) + iota * U(j, m+(1:m));
         h_ckt = {'', []};
-        for q = 1:m
+        for q = 1:m   % Assume Xbar, S, Zbar only consist of X,Y,Z and no XZ = -iY
             if (h(q) == 1)
                 h_ckt(1,:) = {strcat(h_ckt{1,1}, 'X'), [h_ckt{1,2}, q]};
             elseif (h(q) == iota)
@@ -154,7 +105,7 @@ for i = 1:size(F_all,1)
         end
       
         hnew = H(j, 1:m) + iota * H(j, m+(1:m));
-        hnew_ckt = {'', []};
+        hnew_ckt = {'', []};   % desired output
         for q = 1:m
             if (hnew(q) == 1)
                 hnew_ckt(1,:) = {strcat(hnew_ckt{1,1}, 'X'), [hnew_ckt{1,2}, q]};
@@ -166,8 +117,20 @@ for i = 1:size(F_all,1)
                 continue;
             end
         end
-        
-        h_new_ckt = calc_conjugate(m, h_ckt, F_all{i,2});
+        in_sign = 1;   % calculate sign under conjugation for input circuit
+        if (j <= m-k)
+            in_ckt = calc_conjugate(m-k,{'X', j},circuit);
+            if (strcmpi(in_ckt{1,1}(1), '-'))
+                in_sign = -1;
+            end
+        elseif (j > m)
+            in_ckt = calc_conjugate(m-k,{'Z', j-m},circuit);
+            if (strcmpi(in_ckt{1,1}(1), '-'))
+                in_sign = -1;
+            end
+        end
+                
+        h_new_ckt = calc_conjugate(m, h_ckt, F_all{i,2});  % actual output
         out_sign = 1;
         if (strcmpi(h_new_ckt{1,1}(1), '-'))
             out_sign = -1;
@@ -181,11 +144,11 @@ for i = 1:size(F_all,1)
         end
         
         if (strcmpi(hnew_ckt{1,1}, h_new_ckt{1,1}) && ...
-                all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == -1))
+                all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == -in_sign))
             v(j) = 1;
         else
             if (~(strcmpi(hnew_ckt{1,1}, h_new_ckt{1,1}) && ...
-                    all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == 1)))
+                    all(hnew_ckt{1,2} == h_new_ckt{1,2}) && (out_sign == in_sign)))
                 if (j <= m-k)
                     fprintf('\nSomething is wrong for logical Pauli X%d!!\n', j);
                 elseif (j > m)
@@ -197,7 +160,7 @@ for i = 1:size(F_all,1)
         end
     end
     if (any(v == 1))
-        choices = fftshift(gflineq_all(U(1:2*m-k,:), v)',2);
+        choices = fftshift(gflineq_all(H, v)',2);
         choices = choices(:,1:m) + sqrt(-1)*choices(:,m+(1:m));
         [~, cheap_ind] = min(sum(choices ~= 0, 2));
         x = choices(cheap_ind, :);

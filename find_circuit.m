@@ -15,6 +15,11 @@ if (~all(all(mod(F * Omega * F', 2) == Omega)))
     return;
 end
 
+if (all(all(F == eye(2*m))))
+    circuit = [];
+    return;
+end
+
 Decomp = symp_mat_decompose(F);   % Trung Can's decomposition
 circuit = cell(1,2);
 ckt_ind = 1;
