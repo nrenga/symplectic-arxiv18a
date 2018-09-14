@@ -1,4 +1,4 @@
-# symplectic-arxiv18a
+# kerdock_design
 MATLAB codes for the 2018 arXiv paper that uses Kerdock codes to construct unitary 2-designs and logical unitary 2-designs.
 
 To use the scripts and functions in this folder, clone the parent folder (whose link is given below) and add it to your MATLAB path.
