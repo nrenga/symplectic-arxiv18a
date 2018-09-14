@@ -48,6 +48,8 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 *gf2lu.m*: A function to perform LU decomposition on a binary matrix. Uses the algorithm given by Trefethen and Bau in the book "Numerical Linear Algebra".
 
+*gf2trace.m*: A function to calculate the trace map in a Galois field GF(2^m).
+
 
 **Data**:
 
