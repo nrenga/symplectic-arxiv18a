@@ -48,9 +48,9 @@ for i = 1:size(TG,1)
     % Find cheapest circuit in terms of circuit depth
     [depth, cheap_ind] = min(cell2mat(F_all(:,3)));
     F = F_all(cheap_ind, :);
-    TG_logical{i,6} = F{1,1};
-    TG_logical{i,7} = F{1,2};
-    TG_logical{i,8} = F{1,3};
+    TG_logical{i,6} = F{1,1};  % symplectic matrix for physical circuit
+    TG_logical{i,7} = F{1,2};  % physical circuit
+    TG_logical{i,8} = F{1,3};  % depth of circuit
 end
 t2 = clock;
 fprintf('\nElapsed time: %1.4f minutes\n',etime(t2,t1)/60);
