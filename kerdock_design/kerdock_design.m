@@ -1,4 +1,4 @@
-function [TG] = KerdockDesign(m, frobenius, circuits)
+function [TG, PG] = kerdock_design(m, frobenius, circuits)
 % Function to construct a unitary 2-design, using Kerdock sets, on m qubits
 
 % The parameter 'frobenius' is a Boolean variable that indicates if the
@@ -6,19 +6,26 @@ function [TG] = KerdockDesign(m, frobenius, circuits)
 % True (any non-zero value), then the size of the design is (N^2-1)*N*m,
 % and if False (= 0), then the size of the design is (N^2-1)*N, N = 2^m.
 
+% NOTE: To complete the unitary 2-design, each element in TG needs to be
+% combined with each phaseless matrix in the Pauli group (PG) to generate N^2
+% unitary elements. Therefore, the overall design size is (N^2-1)*N^3 or 
+% (N^2-1)*N^3*m. The phaseless elements of the Pauli group can be obtained
+% using the function pauli_group(m), which returns circuits, unitaries and
+% binary representations.
+% The output cell array PG is obtained as PG = pauli_group(m).
+
 % The parameter 'circuits' is a Boolean variable that indicates if circuits
 % need to be calculated for each element of the design.
 
 % The output variable 'TG' is a cell array that consists of either 3 columns
-% (if circuits = 0) or 5 columns (if circuits = 1). In the latter case, the
-% last two columns give circuits obtained by two different procedures, and
-% they are almost equally likely to have smaller depth. The first column of
+% (if circuits = 0) or 4 columns (if circuits = 1). In the latter case, the
+% last column give the quantum circuit for the element. The first column of
 % 'TG' is a 5-tuple in GF(2^m) indexing the element, the second column is
 % the symplectic matrix representation of the element, and the third column
 % is simply a hash to compare different elements; it is just the decimal
 % value of the vectorized form of the symplectic matrix.
 
-% Author: Narayanan Rengaswamy, Date: Sep. 14, 2018
+% Author: Narayanan Rengaswamy, Date: Sep. 15, 2018
 
 if (nargin == 1)
     frobenius = 0;
@@ -71,6 +78,8 @@ for i = 0:(m-1)
     R(i+1, :) = vec_rep;
 end    
 
+PG = pauli_group(m);
+
 if (frobenius)
     s_TG = (N + 1) * N * (N - 1) * m;  % including Frobenius automorphism
     mfro = m;
@@ -79,7 +88,7 @@ else
     mfro = 1;
 end
 if (circuits)
-    TG = cell(s_TG,5);
+    TG = cell(s_TG,4);
 else
     TG = cell(s_TG,3);
 end    
@@ -107,9 +116,13 @@ for a = -1:(N-2)
                 TG{ind,2} = [Ad, AbP; PinvAc, Aat];
                 TG{ind,3} = bi2de(TG{ind,2}(:)');
                 if (circuits)
-                    TG{ind,4} = find_ckt(m,a,c,d,i,R_i,Rinv_i,field_A,P);
-                    TG{ind,5} = find_circuit(TG{ind,2});
-                end
+                    ckt = find_ckt(m,a,c,d,i,R_i,Rinv_i,field_A,P);
+                    ckt2 = find_circuit(TG{ind,2});
+                    if (size(ckt2,1) < size(ckt,1))
+                        ckt = ckt2;
+                    end
+                    TG{ind,4} = ckt;
+                end                
                 ind = ind + 1;
             end
         end
@@ -136,8 +149,12 @@ for a = 0:(N-2)
                 end
                 Fe = [eye(m), mod(field_A{e+2,1}^2 * P,2); zeros(m), eye(m)];
                 Fa = blkdiag(Ad, gf2matinv(Ad)');
-                TG{ind,4} = [find_circuit(Fe); find_circuit(Fa)];
-                TG{ind,5} = find_circuit(TG{ind,2});
+                ckt = [find_circuit(Fe); find_circuit(Fa)];
+                ckt2 = find_circuit(TG{ind,2});
+                if (size(ckt2,1) < size(ckt,1))
+                    ckt = ckt2;
+                end
+                TG{ind,4} = ckt;
             end
             ind = ind + 1;
         end
@@ -156,9 +173,13 @@ for a = 0:(N-2)
         TG{ind,2} = [Ad, Z; Z, Aat];
         TG{ind,3} = bi2de(TG{ind,2}(:)');
         if (circuits)
-            TG{ind,4} = find_circuit(blkdiag(Ad, gf2matinv(Ad)'));
-            TG{ind,5} = find_circuit(TG{ind,2});
-        end
+            ckt = find_circuit(blkdiag(Ad, gf2matinv(Ad)'));
+            ckt2 = find_circuit(TG{ind,2});
+            if (size(ckt2,1) < size(ckt,1))
+                ckt = ckt2;
+            end
+            TG{ind,4} = ckt;
+        end        
         ind = ind + 1;
     end
 end

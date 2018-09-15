@@ -1,5 +1,5 @@
 # kerdock_design
-MATLAB codes for the 2018 arXiv paper that uses Kerdock codes to construct unitary 2-designs and logical unitary 2-designs.
+MATLAB codes for the 2018 paper that uses Kerdock codes and matrices to construct unitary 2-designs and logical unitary 2-designs.
 
 To use the scripts and functions in this folder, clone the parent folder (whose link is given below) and add it to your MATLAB path.
 
@@ -13,25 +13,29 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 **Scripts**:
 
-*logical_kerdock_design.m*: Execute this script to translate a Kerdock design into a logical unitary 2-design for any stabilizer code, and obtain circuits.                     
+*logical_kerdock_design.m*: Use this script to translate a Kerdock design into a logical unitary 2-design for any stabilizer code, and obtain circuits. The script contains an example for the [[6,4,2]] CSS code. 
 
 
 **Functions**:
 
 *DGSet.m*: Function to construct the Delsarte-Goethals set DG(m,r).
 
-*KerdockDesign.m*: Function to produce a unitary 2-design using Kerdock sets of matrices.
+*kerdock_design.m*: Function to produce a unitary 2-design using Kerdock sets of matrices.
+
+*pauli_group.m*: Function to calculate all Pauli group elements, their circuit representation, unitary matrix and binary vector representations.
+
+*pauli_group_logical.m*: Function to calculate a physical realization for one or several logical Pauli circuit(s), up to multiplication by stabilizers.
 
 
 **Data**:
 
-*TG4_no_frob.mat*: File containing the Kerdock unitary 2-design for m = 4 qubits.
+*TG4_no_frob.mat*: File containing the Kerdock unitary 2-design for m = 4 qubits (see kerdock_design.m for details).
 
-*TG4_642_no_frob.mat*: File containing the physical realizations for the logical unitary 2-design on the 4 protected qubits of the [[6,4,2]] CSS code.
+*TG4_642_no_frob.mat*: File containing the physical realizations for the logical unitary 2-design on the 4 protected qubits of the [[6,4,2]] CSS code (see logical_kerdock_design.m for details).
 
-*TG_with_frob.mat*: File containing the enlarged Kerdock unitary 2-design for m = 4 qubits, using the Frobenius automorphisms in GF(2^m).
+*TG_with_frob.mat*: File containing the enlarged Kerdock unitary 2-design for m = 4 qubits, using the Frobenius automorphisms in GF(2^m) (see kerdock_design.m for details).
 
-*TG4_642_with_frob.mat*: File containing the physical realizations for the enlarged logical unitary 2-design on the 4 protected qubits of the [[6,4,2]] CSS code.
+*TG4_642_with_frob.mat*: File containing the physical realizations for the enlarged logical unitary 2-design on the 4 protected qubits of the [[6,4,2]] CSS code (see logical_kerdock_design.m for details).
 
 
 # License
