@@ -26,6 +26,8 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 *pauli_group_logical.m*: Function to calculate a physical realization for one or several logical Pauli circuit(s), up to multiplication by stabilizers.
 
+*gf2trace.m*: A function to calculate the trace map in a Galois field GF(2^m).
+
 
 **Data**:
 
