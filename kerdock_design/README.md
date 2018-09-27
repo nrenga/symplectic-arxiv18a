@@ -15,6 +15,8 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 *logical_kerdock_design.m*: Use this script to translate a Kerdock design into a logical unitary 2-design for any stabilizer code, and obtain circuits. The script contains an example for the [[6,4,2]] CSS code. 
 
+*circuit_complexity.m*: Use this script to reproduce the figures in the paper that plot gate complexity for the 2-design elements.
+
 
 **Functions**:
 
