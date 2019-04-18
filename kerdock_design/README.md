@@ -1,13 +1,15 @@
 # kerdock_design
-MATLAB codes for the 2018 paper that uses Kerdock codes and matrices to construct unitary 2-designs and logical unitary 2-designs.
+MATLAB codes for the 2019 paper that uses Kerdock codes and matrices to construct unitary 2-designs and logical unitary 2-designs.
+
+Paper: https://arxiv.org/abs/1904.07842
+
+Code: https://github.com/nrenga/symplectic-arxiv18a
 
 To use the scripts and functions in this folder, clone the parent folder (whose link is given below) and add it to your MATLAB path.
 
 You will also need the MATLAB Communication Systems Toolbox since these resources use Galois field arithmetic (e.g., gfmul, gfdiv).
 
-Code: https://github.com/nrenga/symplectic-arxiv18a
-
-Copyright (C) 2018  Narayanan Rengaswamy
+Copyright (C) 2019  Narayanan Rengaswamy
 
 This project is licensed under the terms of the GNU Affero General Public License (AGPL) v3.0. See LICENSE.md for details.
 

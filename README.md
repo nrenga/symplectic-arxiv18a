@@ -5,7 +5,7 @@ Paper: https://arxiv.org/abs/1803.06987
 
 Code: https://github.com/nrenga/symplectic-arxiv18a
 
-Copyright (C) 2018  Narayanan Rengaswamy
+Copyright (C) 2019  Narayanan Rengaswamy
 
 This project is licensed under the terms of the GNU Affero General Public License (AGPL) v3.0. See LICENSE.md for details.
 
