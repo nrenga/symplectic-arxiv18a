@@ -3,6 +3,8 @@ MATLAB codes for the 2018 arXiv paper discussing synthesis of logical Clifford o
 
 Paper: https://arxiv.org/abs/1803.06987
 
+Shorter Paper: https://arxiv.org/abs/1907.00310
+
 Code: https://github.com/nrenga/symplectic-arxiv18a
 
 Copyright (C) 2019  Narayanan Rengaswamy
@@ -11,7 +13,7 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 **Scripts**:
 
-*logical_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the arXiv paper.                     
+*logical_cliff_ops_642.m*: Execute this script to reproduce results published in Appendix II of the longer arXiv paper.                     
 
 *logical_cliff_ops.m*: Generic script that can be easily modified to get logical Clifford operators for any stabilizer code. This script also gives a circuit for each obtained symplectic solution. It contains three examples: the [[6,4,2]] CSS code, the [[5,1,3]] perfect code and the [[15,7,3]] Hamming CSS code.
 
@@ -51,7 +53,7 @@ This project is licensed under the terms of the GNU Affero General Public Licens
 
 **Data**:
 
-*logical_cliff_ops_642.mat*: File containing all solutions listed in Appendix II of the arXiv paper. Also includes a circuit for each solution.
+*logical_cliff_ops_642.mat*: File containing all solutions listed in Appendix II of the longer arXiv paper. Also includes a circuit for each solution.
 
 *logical_cliff_ops_513.mat*: File containing all solutions for the [[5,1,3]] code. Also includes a circuit for each solution.
 
